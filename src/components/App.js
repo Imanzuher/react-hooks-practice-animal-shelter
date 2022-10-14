@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import Filters from "./Filters";
 import PetBrowser from "./PetBrowser";
-
+const API_URL = "http://localhost:3001/pets";
 function App() {
   const [pets, setPets] = useState([]);
   const [filters, setFilters] = useState({ type: "all" });
-  useEffect(() => {
-    fetch(`http://localhost:3001/pets`)
-      .then((r) => r.json())
-      .then((data) => {
-        console.log(data);
-        // let update = data.filters((type) => type !== filters.type)
-        // setPets(update)
-      });
-  }, [filters]);
+  const onFindPetsClick = () => {
+    fetch(filters.type === "all" ? API_URL : `${API_URL}?type=${filters.type}`)
+      .then((res) => res.json())
+      .then((data) => setPets(data));
+  };
   return (
     <div className="ui container">
       <header>
@@ -23,10 +19,13 @@ function App() {
       <div className="ui container">
         <div className="ui grid">
           <div className="four wide column">
-            <Filters />
+            <Filters
+              onFindPetsClick={onFindPetsClick}
+              onChangeType={setFilters}
+            />
           </div>
           <div className="twelve wide column">
-            <PetBrowser />
+            <PetBrowser pets={pets} />
           </div>
         </div>
       </div>
